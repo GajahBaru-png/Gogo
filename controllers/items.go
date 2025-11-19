@@ -62,3 +62,42 @@ func FindItems(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": items})
 }
+
+type UpdateItemsInput struct {
+	Name        string `json:"name"`
+	Quantity    int    `json:"quantity" binding:"gte=0"`
+	Description string `json:"description"`
+}
+
+func UpdateItems(c *gin.Context) {
+	var item models.Items
+	if err := models.DB.Where("id = ?", c.Param("id")).First(&item).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var input UpdateItemsInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Males ah"})
+		return
+	}
+
+	updatedItems := models.Items{Name: input.Name, Quantity: input.Quantity, Description: input.Description}
+
+	models.DB.Model(&item).Updates(&updatedItems)
+	c.JSON(http.StatusOK, gin.H{"data": item})
+}
+
+func DeleteItems(c *gin.Context) {
+	ItemsID := c.Param("id")
+	var item models.Items
+
+	result := models.DB.First(&item, ItemsID)
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Items not Found"})
+		return
+	}
+
+	models.DB.Delete(&item)
+	c.JSON(http.StatusOK, gin.H{"message": "Item delete succesfully"})
+}

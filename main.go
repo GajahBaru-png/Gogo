@@ -28,6 +28,8 @@ func main() {
 	{
 		protected.GET("/profile", controllers.Profile)
 		protected.POST("/items", controllers.Items)
+		protected.PATCH("/items/:id", controllers.UpdateItems)
+		protected.DELETE("/items/:id", controllers.DeleteItems)
 	}
 	router.Run(":8000")
 }
