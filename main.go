@@ -24,7 +24,7 @@ func main() {
 	router.POST("/login", controllers.Login)
 	router.GET("/login/:id", controllers.FindUser)
 	router.GET("/items", controllers.FindItems)
-	protected := router.Group("/").Use(middleware.AuthMiddleware())
+	protected := router.Group("/admin").Use(middleware.AuthMiddleware())
 	{
 		protected.GET("/profile", controllers.Profile)
 		protected.POST("/items", controllers.Items)

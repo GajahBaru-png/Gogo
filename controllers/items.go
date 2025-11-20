@@ -67,10 +67,12 @@ type UpdateItemsInput struct {
 	Name        string `json:"name"`
 	Quantity    int    `json:"quantity" binding:"gte=0"`
 	Description string `json:"description"`
+	AddedBy     string `json:"added_by"`
 }
 
 func UpdateItems(c *gin.Context) {
 	var item models.Items
+
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&item).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -82,7 +84,7 @@ func UpdateItems(c *gin.Context) {
 		return
 	}
 
-	updatedItems := models.Items{Name: input.Name, Quantity: input.Quantity, Description: input.Description}
+	updatedItems := models.Items{Name: input.Name, Quantity: input.Quantity, Description: input.Description, AddedBy: input.AddedBy}
 
 	models.DB.Model(&item).Updates(&updatedItems)
 	c.JSON(http.StatusOK, gin.H{"data": item})
